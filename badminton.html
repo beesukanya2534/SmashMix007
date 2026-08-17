@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>จับคู่ตีแบด</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --court:#0F3D2E;
+    --court-deep:#0A2C21;
+    --court-light:#155440;
+    --panel:#175943;
+    --line:#EAF2E9;
+    --muted:#8FB79F;
+    --muted-dim:#5f8a75;
+    --lime:#D4F233;
+    --lime-dim:#a9c229;
+    --coral:#FF6B4A;
+    --gold:#F5B700;
+    --radius:16px;
+    --shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(212,242,51,0.06), transparent 40%),
+      linear-gradient(180deg, var(--court-deep) 0%, var(--court) 100%);
+    color:var(--line);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:84px;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    font-weight:700;
+    margin:0;
+  }
+  /* ---------- header ---------- */
+  header.top{
+    padding:22px 18px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid rgba(234,242,233,0.08);
+  }
+  header.top .shuttle{font-size:28px;line-height:1;}
+  header.top .titles h1{font-size:26px;color:var(--line);}
+  header.top .titles p{margin:2px 0 0;font-size:12px;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;font-family:'Inter',sans-serif;font-weight:600;}
+
+  /* net divider - signature element */
+  .net-divider{
+    height:10px;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(234,242,233,0.35) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(-45deg, rgba(234,242,233,0.35) 0 1px, transparent 1px 8px);
+    opacity:0.5;
+    margin:18px 0;
+    border-radius:2px;
+  }
+
+  main{max-width:920px;margin:0 auto;padding:0 16px 40px;}
+
+  /* ---------- desktop nav ---------- */
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    max-width:920px;
+    margin:0 auto;
+    padding:14px 16px 0;
+  }
+  nav.tabs button{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:15px;
+    padding:10px 6px 14px;
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    transition:all .15s ease;
+  }
+  nav.tabs button.active{color:var(--lime);border-bottom-color:var(--lime);}
+  nav.tabs button:hover{color:var(--line);}
+
+  /* ---------- mobile bottom nav ---------- */
+  nav.bottom{
+    display:none;
+  }
+  @media (max-width:680px){
+    nav.tabs{display:none;}
+    nav.bottom{
+      display:flex;
+      position:fixed;
+      bottom:0;left:0;right:0;
+      background:var(--court-deep);
+      border-top:1px solid rgba(234,242,233,0.1);
+      padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+      z-index:50;
+    }
+    nav.bottom button{
+      flex:1;
+      background:none;border:none;color:var(--muted);
+      display:flex;flex-direction:column;align-items:center;gap:2px;
+      font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
+      padding:4px 0;
+      cursor:pointer;
+    }
+    nav.bottom button .ic{font-size:19px;}
+    nav.bottom button.active{color:var(--lime);}
+  }
+
+  section.panel{
+    background:var(--panel);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-top:18px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(234,242,233,0.06);
+  }
+  .panel h2{font-size:20px;margin-bottom:2px;}
+  .sub{color:var(--muted);font-size:13px;margin:4px 0 14px;}
+
+  /* ---------- form controls ---------- */
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  input[type=text], select, input[type=number]{
+    background:var(--court-deep);
+    border:1px solid rgba(234,242,233,0.15);
+    color:var(--line);
+    padding:11px 12px;
+    border-radius:10px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    outline:none;
+  }
+  input[type=text]:focus, select:focus, input[type=number]:focus{border-color:var(--lime);}
+  input[type=text]{flex:1;min-width:140px;}
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:11px 18px;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform .1s ease, filter .15s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--lime);color:var(--court-deep);}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent;color:var(--line);border:1px solid rgba(234,242,233,0.25);}
+  .btn-ghost:hover{border-color:var(--line);}
+  .btn-danger{background:transparent;color:var(--coral);border:1px solid rgba(255,107,74,0.4);}
+  .btn-danger:hover{background:rgba(255,107,74,0.1);}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn-block{width:100%;padding:14px;font-size:17px;}
+
+  /* ---------- player list ---------- */
+  ul.players{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  ul.players li{
+    display:flex;align-items:center;gap:10px;
+    background:var(--court-deep);
+    border-radius:10px;
+    padding:9px 10px 9px 14px;
+  }
+  ul.players li .name{flex:1;font-weight:600;font-size:14.5px;}
+  .badge{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;font-size:11.5px;
+    padding:3px 9px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:0.03em;
+  }
+  .badge.M{background:rgba(93,169,255,0.18);color:#8fc0ff;}
+  .badge.F{background:rgba(255,120,180,0.18);color:#ff9fce;}
+  .badge.U{background:rgba(234,242,233,0.1);color:var(--muted);}
+  .icon-btn{
+    background:none;border:none;color:var(--muted-dim);cursor:pointer;
+    font-size:16px;padding:4px 6px;border-radius:6px;
+  }
+  .icon-btn:hover{color:var(--coral);background:rgba(255,107,74,0.1);}
+  .count-chip{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--lime);
+    font-size:14px;
+  }
+
+  /* ---------- courts / random draw ---------- */
+  .round-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .round-head .rnum{font-size:15px;color:var(--muted);}
+  .round-head .rnum b{color:var(--lime);}
+
+  .courts-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:14px;
+    margin-top:16px;
+  }
+  .court-card{
+    background:var(--court-deep);
+    border-radius:14px;
+    padding:14px;
+    border:1px solid rgba(234,242,233,0.08);
+    position:relative;
+    overflow:hidden;
+  }
+  .court-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--lime),transparent 70%);
+  }
+  .court-card .court-label{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;
+    color:var(--lime);font-size:13px;letter-spacing:0.06em;margin-bottom:10px;
+  }
+  .team-line{display:flex;flex-direction:column;gap:2px;padding:6px 0;}
+  .team-line .p{font-size:15px;font-weight:600;}
+  .vs{
+    text-align:center;color:var(--muted-dim);font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;font-size:12px;letter-spacing:0.1em;padding:4px 0;
+  }
+  .resting-box{
+    margin-top:16px;padding:12px 14px;border-radius:12px;
+    background:rgba(234,242,233,0.04);border:1px dashed rgba(234,242,233,0.18);
+  }
+  .resting-box .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;margin-bottom:6px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{
+    background:rgba(234,242,233,0.08);
+    padding:4px 10px;border-radius:20px;font-size:13px;
+  }
+  .chip.paired{background:rgba(212,242,51,0.1);color:var(--lime);}
+
+  .empty{
+    text-align:center;padding:30px 10px;color:var(--muted);font-size:14px;
+  }
+  .empty .big{font-size:34px;margin-bottom:8px;}
+
+  /* ---------- tournament bracket ---------- */
+  .bracket-scroll{overflow-x:auto;padding-bottom:8px;margin-top:10px;}
+  .bracket{display:flex;gap:34px;min-width:max-content;padding:6px 2px;}
+  .bracket-col{display:flex;flex-direction:column;gap:24px;min-width:210px;justify-content:space-around;}
+  .bracket-col .col-title{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;
+    color:var(--muted);font-size:13px;letter-spacing:0.06em;text-align:center;margin-bottom:4px;
+  }
+  .match-card{
+    background:var(--court-deep);
+    border:1px solid rgba(234,242,233,0.1);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .team-slot{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;font-size:13.5px;font-weight:600;
+    border-bottom:1px solid rgba(234,242,233,0.08);
+    cursor:pointer;
+  }
+  .team-slot:last-child{border-bottom:none;}
+  .team-slot.empty-slot{color:var(--muted-dim);font-style:italic;cursor:default;}
+  .team-slot.winner{color:var(--lime);background:rgba(212,242,51,0.08);}
+  .team-slot.loser{color:var(--muted-dim);text-decoration:line-through;opacity:0.6;}
+  .team-slot .pick{font-size:10px;color:var(--muted-dim);text-transform:uppercase;}
+  .team-slot:not(.empty-slot):not(.decided):hover{background:rgba(212,242,51,0.06);}
+
+  .champion-box{
+    margin-top:24px;
+    text-align:center;
+    padding:30px 20px;
+    border-radius:18px;
+    background:linear-gradient(160deg, rgba(245,183,0,0.16), rgba(245,183,0,0.02));
+    border:1px solid rgba(245,183,0,0.4);
+    position:relative;
+    overflow:hidden;
+    animation:pop .5s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes pop{from{transform:scale(0.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .champion-box .trophy{font-size:44px;margin-bottom:6px;}
+  .champion-box .lbl{color:var(--gold);font-size:13px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;font-family:'Barlow Condensed',sans-serif;}
+  .champion-box .names{font-size:28px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--line);margin-top:6px;text-transform:uppercase;}
+  .confetti{position:absolute;top:-10px;width:8px;height:14px;opacity:0.9;animation:fall linear forwards;border-radius:2px;}
+  @keyframes fall{to{transform:translateY(220px) rotate(360deg);opacity:0;}}
+
+  .banner{
+    background:rgba(212,242,51,0.1);
+    border:1px solid rgba(212,242,51,0.3);
+    color:var(--lime);
+    padding:10px 14px;border-radius:10px;font-size:13.5px;
+    margin-top:14px;
+  }
+  .banner.warn{background:rgba(255,107,74,0.08);border-color:rgba(255,107,74,0.3);color:var(--coral);}
+
+  .toast{
+    position:fixed;left:50%;bottom:96px;transform:translateX(-50%);
+    background:var(--line);color:var(--court-deep);
+    padding:10px 18px;border-radius:30px;font-size:13.5px;font-weight:600;
+    box-shadow:var(--shadow);z-index:100;opacity:0;pointer-events:none;
+    transition:opacity .25s ease, bottom .25s ease;
+  }
+  .toast.show{opacity:1;bottom:106px;}
+  @media (min-width:681px){.toast{bottom:30px;}.toast.show{bottom:40px;}}
+
+  select#modeSelect, select#genderSelect{min-width:120px;}
+  label.f-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;font-weight:600;display:block;margin-bottom:4px;}
+  .field{display:flex;flex-direction:column;}
+  .g-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shuttle">🏸</div>
+  <div class="titles">
+    <h1>จับคู่ตีแบด</h1>
+    <p>สุ่มคู่ &middot; จัดสนาม &middot; สายการแข่งขัน</p>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="players" class="active">👤 ผู้เล่น</button>
+  <button data-tab="draw">🔀 จับคู่สุ่ม</button>
+  <button data-tab="tourney">🏆 สายการแข่งขัน</button>
+</nav>
+
+<main id="main"></main>
+
+<nav class="bottom">
+  <button data-tab="players" class="active"><span class="ic">👤</span>ผู้เล่น</button>
+  <button data-tab="draw"><span class="ic">🔀</span>จับคู่</button>
+  <button data-tab="tourney"><span class="ic">🏆</span>สาย</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let players = [];           // {id, name, gender: 'M'|'F'|'U'}
+let nextId = 1;
+let numCourts = 2;
+let mode = 'mixed';         // all | male | female | mixed (default: คู่ผสม ตามที่ระบุ)
+let partnerHistory = new Set(); // "id1|id2" sorted -- who has partnered with whom
+let lastResting = new Set();    // ids resting last round (for fairness priority)
+let currentRound = null;    // {roundNumber, courts:[{court, teamA:[p,p], teamB:[p,p]}], waiting:[{players:[..]}]}
+let roundNumber = 0;
+
+let tournament = null;      // {rounds:[[match,...],...], champion:team|null}
+let matchIdCounter = 1;
+
+let activeTab = 'players';
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function uid(){return nextId++;}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function pairKey(a,b){return [a,b].sort((x,y)=>x-y).join('|');}
+function hasPlayedTogether(a,b){return partnerHistory.has(pairKey(a,b));}
+function playerById(id){return players.find(p=>p.id===id);}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._h);
+  toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   TEAM BUILDING ALGORITHM (avoids repeat partners where possible)
+   ============================================================ */
+function compatFn(mode){
+  if(mode==='male')   return (a,b)=> a.gender==='M' && b.gender==='M';
+  if(mode==='female')  return (a,b)=> a.gender==='F' && b.gender==='F';
+  if(mode==='mixed')  return (a,b)=> (a.gender==='M'&&b.gender==='F') || (a.gender==='F'&&b.gender==='M');
+  return ()=>true; // all
+}
+function eligiblePool(mode){
+  if(mode==='male') return players.filter(p=>p.gender==='M');
+  if(mode==='female') return players.filter(p=>p.gender==='F');
+  if(mode==='mixed') return players.filter(p=>p.gender==='M'||p.gender==='F');
+  return players.slice();
+}
+// Attempts several randomized greedy builds, keeps the one with fewest repeat partnerships
+// and prioritizes pairing players who rested last round.
+function buildTeams(pool, mode, attempts=120){
+  const compat = compatFn(mode);
+  let best = null;
+  for(let a=0; a<attempts; a++){
+    // priority: players who rested last round go first (get partnered first)
+    const rested = shuffle(pool.filter(p=>lastResting.has(p.id)));
+    const others = shuffle(pool.filter(p=>!lastResting.has(p.id)));
+    const order = rested.concat(others);
+    const remaining = order.slice();
+    const teams = [];
+    while(remaining.length){
+      const p1 = remaining.shift();
+      // 1st pass: compatible + no repeat
+      let idx = remaining.findIndex(p2=>compat(p1,p2) && !hasPlayedTogether(p1.id,p2.id));
+      // 2nd pass: compatible even if repeat
+      if(idx===-1) idx = remaining.findIndex(p2=>compat(p1,p2));
+      if(idx===-1){ continue; } // no compatible partner found, p1 sits out
+      const p2 = remaining.splice(idx,1)[0];
+      teams.push([p1,p2]);
+    }
+    const leftover = remaining; // players never re-added; recompute properly below
+    // recompute unmatched = pool players not present in any team
+    const matchedIds = new Set(teams.flat().map(p=>p.id));
+    const unmatched = pool.filter(p=>!matchedIds.has(p.id));
+    const repeats = teams.filter(([x,y])=>hasPlayedTogether(x.id,y.id)).length;
+    const score = teams.length*100 - repeats*10 - unmatched.length; // maximize teams, minimize repeats/unmatched
+    if(!best || score>best.score){
+      best = {teams, unmatched, score};
+    }
+  }
+  return best || {teams:[], unmatched:pool.slice()};
+}
+
+function teamPriorityScore(team){
+  return team.filter(p=>lastResting.has(p.id)).length + Math.random()*0.5;
+}
+
+function generateRound(){
+  const pool = eligiblePool(mode);
+  if(pool.length < 4){
+    toast('ต้องมีผู้เล่นที่เข้าเงื่อนไขอย่างน้อย 4 คน');
+    return;
+  }
+  const {teams, unmatched} = buildTeams(pool, mode);
+  if(teams.length < numCourts*2){
+    // not enough teams for requested courts - just use as many as possible, warn
+  }
+  // sort teams by priority (rested-last-round players first), keep some randomness
+  const orderedTeams = teams.map(t=>({t, s:teamPriorityScore(t)})).sort((x,y)=>y.s-x.s).map(x=>x.t);
+
+  const courts = [];
+  const teamsUsedThisRound = [];
+  let ti = 0;
+  for(let c=1; c<=numCourts && ti+1<orderedTeams.length; c++){
+    const teamA = orderedTeams[ti++];
+    const teamB = orderedTeams[ti++];
+    courts.push({court:c, teamA, teamB});
+    teamsUsedThisRound.push(teamA, teamB);
+  }
+  const leftoverTeams = orderedTeams.slice(ti); // teams formed but no court available
+  const waiting = leftoverTeams.map(t=>({players:t}));
+  unmatched.forEach(p=>waiting.push({players:[p]}));
+
+  // update history: every team formed this round (even ones not on court) counts as "partnered"
+  orderedTeams.forEach(([a,b])=>partnerHistory.add(pairKey(a.id,b.id)));
+
+  // figure resting ids for next round's fairness priority
+  const playingIds = new Set(courts.flatMap(c=>[...c.teamA,...c.teamB]).map(p=>p.id));
+  lastResting = new Set(pool.filter(p=>!playingIds.has(p.id)).map(p=>p.id));
+
+  roundNumber++;
+  currentRound = {roundNumber, courts, waiting};
+  render();
+}
+
+/* ============================================================
+   TOURNAMENT
+   ============================================================ */
+function nextPow2(n){let p=1; while(p<n) p*=2; return p;}
+
+function startTournamentFromTeams(teamList){
+  // teamList: array of [p1,p2]
+  if(teamList.length < 2){
+    toast('ต้องมีอย่างน้อย 2 ทีมเพื่อเริ่มสาย');
+    return;
+  }
+  const shuffled = shuffle(teamList);
+  const size = nextPow2(shuffled.length);
+  const byes = size - shuffled.length;
+  const slots = shuffled.map(t=>({players:t}));
+  for(let i=0;i<byes;i++) slots.push(null); // null = bye slot
+
+  const round1 = [];
+  for(let i=0;i<slots.length;i+=2){
+    const teamA = slots[i], teamB = slots[i+1];
+    const m = {
+      id: matchIdCounter++,
+      teamA, teamB,
+      winner: null,
+      isBye: !teamA || !teamB
+    };
+    if(m.isBye){ m.winner = teamA || teamB; }
+    round1.push(m);
+  }
+  const rounds = [round1];
+  let count = round1.length;
+  while(count>1){
+    count = count/2;
+    const r = [];
+    for(let i=0;i<count;i++){
+      r.push({id:matchIdCounter++, teamA:null, teamB:null, winner:null, isBye:false});
+    }
+    rounds.push(r);
+  }
+  tournament = {rounds, champion:null};
+  propagateByes();
+  render();
+}
+
+function propagateByes(){
+  // push any auto-decided winners (byes) into next round's slots
+  for(let r=0; r<tournament.rounds.length-1; r++){
+    const round = tournament.rounds[r];
+    const nextRound = tournament.rounds[r+1];
+    round.forEach((m, i)=>{
+      if(m.winner){
+        const nm = nextRound[Math.floor(i/2)];
+        if(i%2===0) nm.teamA = m.winner; else nm.teamB = m.winner;
+        if(nm.teamA && !nm.teamB && isSlotBye(nextRound, i)){ /* noop */ }
+      }
+    });
+  }
+  // check final
+  const lastRound = tournament.rounds[tournament.rounds.length-1];
+  if(lastRound.length===1 && lastRound[0].winner){
+    tournament.champion = lastRound[0].winner;
+  }
+}
+function isSlotBye(){return false;}
+
+function pickWinner(roundIdx, matchIdx, side){
+  const m = tournament.rounds[roundIdx][matchIdx];
+  if(!m.teamA || !m.teamB || m.winner) return;
+  const winner = side==='A' ? m.teamA : m.teamB;
+  const loser = side==='A' ? m.teamB : m.teamA;
+  m.winner = winner;
+
+  if(roundIdx === tournament.rounds.length-1){
+    tournament.champion = winner;
+  } else {
+    const nextRound = tournament.rounds[roundIdx+1];
+    const nm = nextRound[Math.floor(matchIdx/2)];
+    if(matchIdx%2===0) nm.teamA = winner; else nm.teamB = winner;
+    // auto-resolve if next match becomes a bye somehow (shouldn't normally happen post round1)
+  }
+  toast('บันทึกผลแล้ว ผู้แพ้กลับเข้ารอบสุ่มใหม่ได้เลย');
+  render();
+}
+
+function resetTournament(){
+  tournament = null;
+  render();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function el(html){
+  const d = document.createElement('div');
+  d.innerHTML = html.trim();
+  return d.firstElementChild;
+}
+function genderBadge(g){
+  if(g==='M') return '<span class="badge M">ชาย</span>';
+  if(g==='F') return '<span class="badge F">หญิง</span>';
+  return '<span class="badge U">ไม่ระบุ</span>';
+}
+
+function renderPlayersTab(){
+  const listHtml = players.length ? players.map(p=>`
+    <li>
+      <span class="name">${p.name}</span>
+      ${genderBadge(p.gender)}
+      <button class="icon-btn" data-remove="${p.id}" title="ลบ">✕</button>
+    </li>`).join('') : '';
+
+  return `
+    <section class="panel">
+      <div class="row" style="justify-content:space-between;">
+        <h2>รายชื่อผู้เล่น</h2>
+        <span class="count-chip">${players.length} คน</span>
+      </div>
+      <p class="sub">เพิ่มชื่อผู้เล่นและระบุเพศ (ใช้สำหรับโหมดคู่ผสม / ชายคู่ / หญิงคู่)</p>
+      <form id="addPlayerForm" class="row">
+        <input type="text" id="nameInput" placeholder="ชื่อผู้เล่น" autocomplete="off" required>
+        <select id="genderSelect">
+          <option value="U">ไม่ระบุ</option>
+          <option value="M">ชาย</option>
+          <option value="F">หญิง</option>
+        </select>
+        <button type="submit" class="btn btn-primary">+ เพิ่ม</button>
+      </form>
+      <ul class="players">${listHtml}</ul>
+      ${players.length===0 ? `<div class="empty"><div class="big">🏸</div>ยังไม่มีผู้เล่น เริ่มเพิ่มชื่อได้เลย</div>` : ''}
+      ${players.length>0 ? `<div class="g-actions"><button class="btn btn-danger" id="clearPlayersBtn">ล้างรายชื่อทั้งหมด</button></div>` : ''}
+    </section>`;
+}
+
+function renderDrawTab(){
+  const modeLabels = {all:'ทั้งหมด (คละ)', male:'ชายคู่', female:'หญิงคู่', mixed:'คู่ผสม'};
+  let body = '';
+
+  if(currentRound){
+    const courtsHtml = currentRound.courts.map(c=>`
+      <div class="court-card">
+        <div class="court-label">🏟️ สนาม ${c.court}</div>
+        <div class="team-line">
+          ${c.teamA.map(p=>`<span class="p">${p.name}</span>`).join('')}
+        </div>
+        <div class="vs">VS</div>
+        <div class="team-line">
+          ${c.teamB.map(p=>`<span class="p">${p.name}</span>`).join('')}
+        </div>
+      </div>`).join('');
+
+    const waitingChips = currentRound.waiting.map(w=>{
+      if(w.players.length===2){
+        return `<span class="chip paired">${w.players[0].name} + ${w.players[1].name}</span>`;
+      }
+      return `<span class="chip">${w.players[0].name}</span>`;
+    }).join('');
+
+    body = `
+      <div class="round-head">
+        <span class="rnum">รอบที่ <b>${currentRound.roundNumber}</b> &middot; โหมด: ${modeLabels[mode]}</span>
+      </div>
+      <div class="courts-grid">${courtsHtml}</div>
+      ${currentRound.waiting.length ? `
+        <div class="resting-box">
+          <div class="lbl">⏳ พัก / รอสนามว่างรอบนี้</div>
+          <div class="chip-row">${waitingChips}</div>
+        </div>` : ''}
+      <div class="g-actions">
+        <button class="btn btn-primary btn-block" id="reshuffleBtn">🔀 สุ่มรอบใหม่</button>
+        <button class="btn btn-ghost" id="sendTourneyBtn">🏆 ส่งเข้าสายการแข่งขัน</button>
+      </div>
+    `;
+  } else {
+    body = `<div class="empty"><div class="big">🔀</div>ยังไม่มีการจับคู่ กดปุ่มด้านล่างเพื่อเริ่มสุ่มรอบแรก</div>
+      <button class="btn btn-primary btn-block" id="reshuffleBtn">🔀 สุ่มจับคู่รอบแรก</button>`;
+  }
+
+  return `
+    <section class="panel">
+      <h2>ตั้งค่าการจับคู่</h2>
+      <p class="sub">กำหนดจำนวนสนามและโหมดจับคู่ ก่อนกดสุ่ม</p>
+      <div class="row">
+        <div class="field">
+          <label class="f-label">จำนวนสนาม</label>
+          <input type="number" id="courtsInput" min="1" max="20" value="${numCourts}" style="width:90px;">
+        </div>
+        <div class="field">
+          <label class="f-label">โหมดจับคู่</label>
+          <select id="modeSelect">
+            <option value="all" ${mode==='all'?'selected':''}>ทั้งหมด (คละ)</option>
+            <option value="male" ${mode==='male'?'selected':''}>ชายคู่</option>
+            <option value="female" ${mode==='female'?'selected':''}>หญิงคู่</option>
+            <option value="mixed" ${mode==='mixed'?'selected':''}>คู่ผสม</option>
+          </select>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      ${body}
+    </section>
+  `;
+}
+
+function teamNames(team){
+  if(!team) return '';
+  return team.players.map(p=>p.name).join(' / ');
+}
+
+function renderTourneyTab(){
+  if(!tournament){
+    const canFromRound = currentRound && (currentRound.courts.length>0 || currentRound.waiting.some(w=>w.players.length===2));
+    return `
+      <section class="panel">
+        <h2>สายการแข่งขัน</h2>
+        <p class="sub">สร้างสายแบบแพ้คัดออก จากทีมที่จับคู่ไว้ หรือจากผู้เล่นทั้งหมดโดยตรง</p>
+        <div class="empty"><div class="big">🏆</div>ยังไม่มีสายการแข่งขัน</div>
+        <div class="g-actions">
+          <button class="btn btn-primary btn-block" id="startFromRoundBtn" ${canFromRound?'':'disabled'}>เริ่มสายจากรอบจับคู่ปัจจุบัน</button>
+          <button class="btn btn-ghost btn-block" id="startFromAllBtn">สร้างสายจากผู้เล่นทั้งหมด (สุ่มใหม่)</button>
+        </div>
+        ${!canFromRound ? '<p class="sub" style="margin-top:10px;">* ไปที่แท็บ "จับคู่สุ่ม" เพื่อสร้างทีมก่อน หรือใช้ปุ่มด้านล่างเพื่อสุ่มทีมจากผู้เล่นทั้งหมดโดยตรง</p>' : ''}
+      </section>`;
+  }
+
+  const roundTitles = tournament.rounds.map((r,i)=>{
+    if(i === tournament.rounds.length-1) return 'รอบชิงชนะเลิศ';
+    return `รอบ ${i+1}`;
+  });
+
+  const cols = tournament.rounds.map((round, ri)=>{
+    const matches = round.map((m, mi)=>{
+      const aDecided = !!m.winner;
+      const slotA = !m.teamA ? `<div class="team-slot empty-slot">รอทีม...</div>` :
+        `<div class="team-slot ${m.winner?(m.winner===m.teamA?'winner':'loser'):''} ${aDecided?'decided':''}" data-r="${ri}" data-m="${mi}" data-side="A">
+          <span>${teamNames(m.teamA)}</span>${!m.winner?'<span class="pick">เลือก ✓</span>':''}
+        </div>`;
+      const slotB = !m.teamB ? `<div class="team-slot empty-slot">${m.isBye?'บาย':'รอทีม...'}</div>` :
+        `<div class="team-slot ${m.winner?(m.winner===m.teamB?'winner':'loser'):''} ${aDecided?'decided':''}" data-r="${ri}" data-m="${mi}" data-side="B">
+          <span>${teamNames(m.teamB)}</span>${!m.winner?'<span class="pick">เลือก ✓</span>':''}
+        </div>`;
+      return `<div class="match-card">${slotA}${slotB}</div>`;
+    }).join('');
+    return `<div class="bracket-col"><div class="col-title">${roundTitles[ri]}</div>${matches}</div>`;
+  }).join('');
+
+  const championHtml = tournament.champion ? `
+    <div class="champion-box" id="championBox">
+      <div class="trophy">🏆</div>
+      <div class="lbl">แชมป์</div>
+      <div class="names">${teamNames(tournament.champion)}</div>
+    </div>` : '';
+
+  return `
+    <section class="panel">
+      <div class="row" style="justify-content:space-between;">
+        <h2>สายการแข่งขัน</h2>
+        <button class="btn btn-danger" id="resetTourneyBtn">เริ่มสายใหม่</button>
+      </div>
+      <p class="sub">แตะชื่อทีมเพื่อบันทึกผู้ชนะ ผู้ชนะจะเลื่อนขึ้นรอบถัดไป ผู้แพ้กลับไปสุ่มรอบใหม่ได้</p>
+      <div class="bracket-scroll"><div class="bracket">${cols}</div></div>
+      ${championHtml}
+    </section>
+  `;
+}
+
+function render(){
+  const main = document.getElementById('main');
+  let html = '';
+  if(activeTab==='players') html = renderPlayersTab();
+  else if(activeTab==='draw') html = renderDrawTab();
+  else html = renderTourneyTab();
+  main.innerHTML = html;
+  attachHandlers();
+
+  document.querySelectorAll('nav button[data-tab]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===activeTab);
+  });
+
+  if(activeTab==='tourney' && tournament && tournament.champion){
+    launchConfetti();
+  }
+}
+
+function launchConfetti(){
+  const box = document.getElementById('championBox');
+  if(!box || box.dataset.done) return;
+  box.dataset.done = '1';
+  const colors = ['#D4F233','#F5B700','#FF6B4A','#EAF2E9'];
+  for(let i=0;i<28;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100+'%';
+    c.style.background = colors[i%colors.length];
+    c.style.animationDuration = (1.2+Math.random()*1.2)+'s';
+    c.style.animationDelay = (Math.random()*0.4)+'s';
+    box.appendChild(c);
+    setTimeout(()=>c.remove(), 3000);
+  }
+}
+
+function attachHandlers(){
+  // nav
+  document.querySelectorAll('nav button[data-tab]').forEach(b=>{
+    b.onclick = ()=>{ activeTab = b.dataset.tab; render(); };
+  });
+
+  // players tab
+  const form = document.getElementById('addPlayerForm');
+  if(form){
+    form.onsubmit = (e)=>{
+      e.preventDefault();
+      const nameInput = document.getElementById('nameInput');
+      const genderSelect = document.getElementById('genderSelect');
+      const name = nameInput.value.trim();
+      if(!name) return;
+      players.push({id:uid(), name, gender:genderSelect.value});
+      nameInput.value='';
+      render();
+      document.getElementById('nameInput').focus();
+    };
+  }
+  document.querySelectorAll('[data-remove]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = Number(b.dataset.remove);
+      players = players.filter(p=>p.id!==id);
+      render();
+    };
+  });
+  const clearBtn = document.getElementById('clearPlayersBtn');
+  if(clearBtn) clearBtn.onclick = ()=>{
+    if(confirm('ล้างรายชื่อผู้เล่นทั้งหมด?')){
+      players = []; currentRound=null; tournament=null; partnerHistory=new Set(); lastResting=new Set(); roundNumber=0;
+      render();
+    }
+  };
+
+  // draw tab
+  const courtsInput = document.getElementById('courtsInput');
+  if(courtsInput) courtsInput.onchange = ()=>{
+    numCourts = Math.max(1, Math.min(20, Number(courtsInput.value)||1));
+  };
+  const modeSelect = document.getElementById('modeSelect');
+  if(modeSelect) modeSelect.onchange = ()=>{ mode = modeSelect.value; };
+  const reshuffleBtn = document.getElementById('reshuffleBtn');
+  if(reshuffleBtn) reshuffleBtn.onclick = ()=>{
+    if(courtsInput) numCourts = Math.max(1, Math.min(20, Number(courtsInput.value)||1));
+    if(modeSelect) mode = modeSelect.value;
+    generateRound();
+  };
+  const sendTourneyBtn = document.getElementById('sendTourneyBtn');
+  if(sendTourneyBtn) sendTourneyBtn.onclick = ()=>{
+    const teamList = [];
+    currentRound.courts.forEach(c=>{ teamList.push(c.teamA); teamList.push(c.teamB); });
+    currentRound.waiting.forEach(w=>{ if(w.players.length===2) teamList.push(w.players); });
+    activeTab='tourney';
+    startTournamentFromTeams(teamList);
+  };
+
+  // tourney tab
+  const startFromRoundBtn = document.getElementById('startFromRoundBtn');
+  if(startFromRoundBtn) startFromRoundBtn.onclick = ()=>{
+    const teamList = [];
+    currentRound.courts.forEach(c=>{ teamList.push(c.teamA); teamList.push(c.teamB); });
+    currentRound.waiting.forEach(w=>{ if(w.players.length===2) teamList.push(w.players); });
+    startTournamentFromTeams(teamList);
+  };
+  const startFromAllBtn = document.getElementById('startFromAllBtn');
+  if(startFromAllBtn) startFromAllBtn.onclick = ()=>{
+    const pool = eligiblePool(mode);
+    if(pool.length<4){ toast('ต้องมีผู้เล่นที่เข้าเงื่อนไขอย่างน้อย 4 คน'); return; }
+    const {teams} = buildTeams(pool, mode);
+    teams.forEach(([a,b])=>partnerHistory.add(pairKey(a.id,b.id)));
+    startTournamentFromTeams(teams);
+  };
+  const resetTourneyBtn = document.getElementById('resetTourneyBtn');
+  if(resetTourneyBtn) resetTourneyBtn.onclick = ()=>{
+    if(confirm('เริ่มสายการแข่งขันใหม่? ผลปัจจุบันจะถูกล้าง')) resetTournament();
+  };
+  document.querySelectorAll('.team-slot[data-r]').forEach(s=>{
+    if(s.classList.contains('decided')) return;
+    s.onclick = ()=>{
+      pickWinner(Number(s.dataset.r), Number(s.dataset.m), s.dataset.side);
+    };
+  });
+}
+
+render();
+</script>
+</body>
+</html>
